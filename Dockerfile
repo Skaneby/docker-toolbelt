@@ -7,10 +7,7 @@ RUN apt-get update && apt-get install -y --force-yes \
   curl \
   git \
   checkinstall \
-  build-essential \
   g++ \
-  autoconf \
-  automake \
   libass-dev \
   texi2html \
   libfdk-aac-dev \
@@ -19,7 +16,6 @@ RUN apt-get update && apt-get install -y --force-yes \
   libvdpau-dev \
   apache2 \
   libapache2-mod-php5 \
-  libass-dev \
   libcurl4-openssl-dev \
   libfreetype6-dev \
   libmp3lame-dev \
@@ -52,25 +48,24 @@ RUN cd /usr/local/src/x264 && \ git clone --depth 1 git://git.videolan.org/x264.
   make && \
   make install && \
   make clean ##
-  
-RUN cd /root/source/ffmpeg && \
-  wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
+RUN cd /usr/local/src/ffmpeg && \
+  git clone git://source.ffmpeg.org/ffmpeg . \
+  echo -e "\nBuilding ffmpeg\n\n" \
   tar xjvf ffmpeg-snapshot.tar.bz2 && \
   cd ffmpeg && \
   ./configure \
-    --pkg-config-flags="--static" \
-    --enable-gpl \
-    --enable-libass \
-    --enable-libfdk-aac \
-    --enable-libfreetype \
-    --enable-libmp3lame \
-    --enable-libopus \
-    --enable-libtheora \
-    --enable-libvorbis \
-    --enable-libvpx \
-    --enable-libx264 \
-    --enable-nonfree && \
-  make && \
+ --extra-libs="-ldl"
+    --enable-gpl
+    --enable-libass
+    --enable-libfdk-aac
+    --enable-libmp3lame
+    --enable-libopus
+    --enable-libtheora
+    --enable-libvorbis
+    --enable-libvpx
+    --enable-libx264
+    --enable-nonfree &&
+  make -j 4 && \
   make install && \
   make distclean && \
   hash -r
