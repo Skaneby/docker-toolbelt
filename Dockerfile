@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 MAINTAINER Eyevinn Technology <info@eyevinn.se>
 RUN apt-get update && apt-get install -y --force-yes \
   autoconf \
@@ -6,6 +6,17 @@ RUN apt-get update && apt-get install -y --force-yes \
   build-essential \
   curl \
   git \
+  checkinstall \
+  build-essential \
+  g++ \
+  autoconf \
+  automake \
+  libass-dev \
+  texi2html \
+  libfdk-aac-dev \
+  libvpx-dev \
+  libgpac-dev \
+  libvdpau-dev \
   apache2 \
   libapache2-mod-php5 \
   libass-dev \
@@ -27,25 +38,21 @@ RUN apt-get update && apt-get install -y --force-yes \
   wget \
   yasm \
   zlib1g-dev
-RUN mkdir /root/source
-RUN mkdir /root/source/ffmpeg
-RUN cd /root/source/ffmpeg && \ 
-  wget -O fdk-aac.tar.gz https://github.com/mstorsjo/fdk-aac/tarball/master && \
-  tar xzvf fdk-aac.tar.gz && \
-  cd mstorsjo-fdk-aac* && \
-  autoreconf -fiv && \
-  ./configure --disable-shared && \
-  make && \
+RUN mkdir -p /usr/local/src/x264
+RUN mkdir  -p /usr/local/src/ffmpeg
+RUN cd /usr/local/src/x264 && \ git clone --depth 1 git://git.videolan.org/x264.git && \
+  ./configure --disable-shared && \ --enable-static && \ make -j 4 && \
   make install && \
   make distclean
-RUN cd /root/source/ffmpeg && \
+#RUN cd /root/source/ffmpeg && \
   wget http://storage.googleapis.com/downloads.webmproject.org/releases/webm/libvpx-1.5.0.tar.bz2 && \
   tar xjvf libvpx-1.5.0.tar.bz2 && \
   cd libvpx-1.5.0 && \
   ./configure --disable-examples --disable-unit-tests && \
   make && \
   make install && \
-  make clean 
+  make clean ##
+  
 RUN cd /root/source/ffmpeg && \
   wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
   tar xjvf ffmpeg-snapshot.tar.bz2 && \
